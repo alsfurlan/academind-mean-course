@@ -1,9 +1,21 @@
 <mat-card>
-  <mat-form-field>
-    <input matInput type="text" [(ngModel)]="enteredTitle"/>
-  </mat-form-field>
-  <mat-form-field>
-    <textarea matInput rows="6" [(ngModel)]="enteredContent"></textarea>
-  </mat-form-field>
-  <button mat-raised-button color="accent" (click)="onAddPost()">Save Post</button>
+  <form #postForm="ngForm">
+    <mat-form-field>
+      <input matInput type="text" name="title" ngModel required minlength="3" #title="ngModel"/>
+      <mat-error *ngIf="title.errors?.minlength">O campo deve ter no mínimo 3 caracteres</mat-error>
+      <mat-error *ngIf="title.errors?.required">O campo é obrigatório</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <textarea matInput rows="6" name="content" ngModel required #content="ngModel"></textarea>
+      <mat-error *ngIf="content.errors?.required">O campo é obrigatório</mat-error>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="onAddPost(postForm)"
+      [disabled]="postForm.invalid"
+    >
+      Save Post
+    </button>
+  </form>
 </mat-card>
