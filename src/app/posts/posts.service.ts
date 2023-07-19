@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Post } from './post.model';
-import { Subject, map } from 'rxjs';
+import { Post, PostResponse } from './post.model';
+import { Observable, Subject, map, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,7 @@ export class PostsService {
 
   getPosts() {
     this.httpClient
-      .get<{ message: string; posts: any }>(this.apiUrl)
+      .get<{ message: string; posts: PostResponse[] }>(this.apiUrl)
       .pipe(
         map(({ posts }) =>
           posts.map(({ _id, ...post }) => ({ id: _id, ...post }))
@@ -34,8 +34,33 @@ export class PostsService {
       .subscribe(({ postId }) => {
         post.id = postId;
         this.posts = [...this.posts, post];
-        this.postsSubject.next(this.posts);
+        this.postsSubject.next([...this.posts]);
       });
+  }
+
+  updatePost(post: Post) {
+    return this.httpClient
+      .put<{ message: string }>(this.apiUrl + post.id, post)
+      .subscribe(() => {
+        const updatedPosts = [...this.posts];
+        const index = this.posts.findIndex((p) => p.id === post.id);
+        updatedPosts[index] = post;
+        this.posts = updatedPosts;
+        this.postsSubject.next([...this.posts]);
+      });
+  }
+
+  getPost(postId: string): Observable<Post> {
+    const post = { ...this.posts.find((post) => post.id === postId) };
+
+    return post ? of(post): this.httpClient
+      .get<{ post: PostResponse }>(this.apiUrl + postId)
+      .pipe(
+        map(({ post }) => {
+          const { _id: id, ...props } = post;
+          return { id, ...props };
+        })
+      );
   }
 
   deletePost(postId: string) {

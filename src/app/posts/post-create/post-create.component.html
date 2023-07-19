@@ -1,18 +1,41 @@
-<mat-card>
+<mat-card *ngIf="(post$ | async) as post">
   <form #postForm="ngForm">
     <mat-form-field>
-      <input matInput type="text" name="title" ngModel required minlength="3" #title="ngModel" placeholder="Title"/>
-      <mat-error *ngIf="title.errors?.minlength">O campo deve ter no mínimo 3 caracteres</mat-error>
-      <mat-error *ngIf="title.errors?.required">O campo é obrigatório</mat-error>
+      <input
+        matInput
+        type="text"
+        name="title"
+        [ngModel]="post?.title"
+        required
+        minlength="3"
+        #title="ngModel"
+        placeholder="Title"
+      />
+      <mat-error *ngIf="title.errors?.minlength"
+        >O campo deve ter no mínimo 3 caracteres</mat-error
+      >
+      <mat-error *ngIf="title.errors?.required"
+        >O campo é obrigatório</mat-error
+      >
     </mat-form-field>
     <mat-form-field>
-      <textarea matInput rows="6" name="content" ngModel required #content="ngModel" placeholder="Content"></textarea>
-      <mat-error *ngIf="content.errors?.required">O campo é obrigatório</mat-error>
+      <textarea
+        matInput
+        rows="6"
+        name="content"
+        [ngModel]="post?.content"
+        required
+        #content="ngModel"
+        placeholder="Content"
+      ></textarea>
+      <mat-error *ngIf="content.errors?.required"
+        >O campo é obrigatório</mat-error
+      >
     </mat-form-field>
     <button
       mat-raised-button
       color="accent"
-      (click)="onAddPost(postForm)"
+      (click)="onSave(postForm)"
       [disabled]="postForm.invalid"
     >
       Save Post
