@@ -51,9 +51,8 @@ export class PostsService {
   }
 
   getPost(postId: string): Observable<Post> {
-    const post = { ...this.posts.find((post) => post.id === postId) };
-
-    return post ? of(post): this.httpClient
+    const post = this.posts.find((post) => post.id === postId);
+    return post ? of({...post}): this.httpClient
       .get<{ post: PostResponse }>(this.apiUrl + postId)
       .pipe(
         map(({ post }) => {
