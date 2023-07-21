@@ -3,7 +3,7 @@ import { Post } from '../post.model';
 import { NgForm } from '@angular/forms';
 import { PostsService } from '../posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, finalize, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-post-create',
@@ -11,7 +11,8 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./post-create.component.css'],
 })
 export class PostCreateComponent implements OnInit {
-  post$: Observable<Post>;
+  post: Post;
+  isLoading = false;
   private postId: string;
   private mode = 'create';
 
@@ -26,11 +27,15 @@ export class PostCreateComponent implements OnInit {
         this.mode = 'edit';
         const postId = paramMap.get('postId');
         this.postId = postId;
-        this.post$ = this.postsService.getPost(postId);
+        this.isLoading = true;
+        this.postsService.getPost(postId).subscribe((post) => {
+          this.post = post;
+          this.isLoading = false;
+        });
       } else {
         this.mode = 'create';
         this.postId = null;
-        this.post$ = of({ id: null, title: '', content: '' });
+        this.post =  null;
       }
     });
   }
@@ -40,6 +45,7 @@ export class PostCreateComponent implements OnInit {
       title: form.value.title,
       content: form.value.content,
     };
+    this.isLoading = true;
     if (this.mode === 'create') {
       this.postsService.addPost(post);
     } else {

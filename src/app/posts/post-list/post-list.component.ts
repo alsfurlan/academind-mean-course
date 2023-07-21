@@ -10,11 +10,16 @@ import { Observable } from 'rxjs';
 })
 export class PostListComponent implements OnInit {
   posts$: Observable<Post[]> = this.postsService.posts$;
+  isLoading = true;
 
   constructor(public postsService: PostsService) {}
 
   ngOnInit(): void {
     this.postsService.getPosts();
+    this.isLoading = false;
+    this.postsService.posts$.subscribe(() => {
+      this.isLoading = false;
+    })
   }
 
   onDelete(postId: string) {

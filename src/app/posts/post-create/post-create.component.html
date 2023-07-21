@@ -1,5 +1,6 @@
-<mat-card *ngIf="(post$ | async) as post">
-  <form #postForm="ngForm">
+<mat-card>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <form #postForm="ngForm" *ngIf="!isLoading">
     <mat-form-field>
       <input
         matInput

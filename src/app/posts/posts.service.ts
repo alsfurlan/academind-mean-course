@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Post, PostResponse } from './post.model';
 import { Observable, Subject, map, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ export class PostsService {
   posts$ = this.postsSubject.asObservable();
   private apiUrl = 'http://localhost:3000/api/posts/';
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private route: Router) {}
 
   getPosts() {
     this.httpClient
@@ -35,6 +36,7 @@ export class PostsService {
         post.id = postId;
         this.posts = [...this.posts, post];
         this.postsSubject.next([...this.posts]);
+        this.route.navigate(['']);
       });
   }
 
@@ -47,19 +49,20 @@ export class PostsService {
         updatedPosts[index] = post;
         this.posts = updatedPosts;
         this.postsSubject.next([...this.posts]);
+        this.route.navigate(['']);
       });
   }
 
   getPost(postId: string): Observable<Post> {
     const post = this.posts.find((post) => post.id === postId);
-    return post ? of({...post}): this.httpClient
-      .get<{ post: PostResponse }>(this.apiUrl + postId)
-      .pipe(
-        map(({ post }) => {
-          const { _id: id, ...props } = post;
-          return { id, ...props };
-        })
-      );
+    return post
+      ? of({ ...post })
+      : this.httpClient.get<{ post: PostResponse }>(this.apiUrl + postId).pipe(
+          map(({ post }) => {
+            const { _id: id, ...props } = post;
+            return { id, ...props };
+          })
+        );
   }
 
   deletePost(postId: string) {

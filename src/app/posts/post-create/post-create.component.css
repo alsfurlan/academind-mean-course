@@ -1,5 +1,10 @@
 mat-card {
   margin-top: 1rem;
+  padding: 1rem;
+}
+
+mat-spinner {
+  margin: auto;
 }
 
 mat-form-field,
