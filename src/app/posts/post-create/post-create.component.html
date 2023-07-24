@@ -1,21 +1,19 @@
 <mat-card>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
-  <form #postForm="ngForm" *ngIf="!isLoading">
+  <form [formGroup]="form" (ngSubmit)="onSave()" *ngIf="!isLoading">
     <mat-form-field>
       <input
         matInput
         type="text"
         name="title"
-        [ngModel]="post?.title"
-        required
-        minlength="3"
-        #title="ngModel"
+        formControlName="title"
         placeholder="Title"
+        #title
       />
-      <mat-error *ngIf="title.errors?.minlength"
+      <mat-error *ngIf="form.get('title')?.errors?.minlength"
         >O campo deve ter no mínimo 3 caracteres</mat-error
       >
-      <mat-error *ngIf="title.errors?.required"
+      <mat-error *ngIf="form.get('title')?.errors?.required"
         >O campo é obrigatório</mat-error
       >
     </mat-form-field>
@@ -28,21 +26,17 @@
         matInput
         rows="6"
         name="content"
-        [ngModel]="post?.content"
-        required
-        #content="ngModel"
+        formControlName="content"
         placeholder="Content"
       ></textarea>
-      <mat-error *ngIf="content.errors?.required"
+      <mat-error *ngIf="form.get('content').errors?.required"
         >O campo é obrigatório</mat-error
       >
     </mat-form-field>
     <button
       mat-raised-button
       color="accent"
-      (click)="onSave(postForm)"
-      [disabled]="postForm.invalid"
-    >
+      [disabled]="form.invalid">
       Save Post
     </button>
   </form>
