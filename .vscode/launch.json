@@ -7,7 +7,7 @@
       "type": "node",
       "request": "launch",
       "preLaunchTask": "npm: start:server"
-    }
+    },
     {
       "name": "ng serve",
       "type": "chrome",

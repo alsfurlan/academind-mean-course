@@ -11,3 +11,11 @@ mat-form-field,
 textarea {
   width: 100%;
 }
+
+button[mat-stroked-button] {
+  margin-bottom: 1.25rem;
+}
+
+input[type="file"] {
+  visibility: hidden;
+}
