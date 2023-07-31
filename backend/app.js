@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const path = require("path");
 
 const postsRoute = require("./routes/posts");
 const app = express();
@@ -33,11 +34,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/posts', postsRoute);
-
-app.use((req, res, next) => {
-  res.send("Hello from express!");
-});
+app.use("/api/posts", postsRoute);
+app.use("/images", express.static(path.join('backend/images')));
 
 
 module.exports = app;
