@@ -29,16 +29,15 @@ export class PostsService {
       });
   }
 
-  addPost(post: Post) {
+  addPost(post: Post, image: File) {
     const postData = new FormData();
     postData.set('title', post.title);
     postData.set('content', post.content);
-    postData.set('image', post.image, post.title);
+    postData.set('image', image, post.title);
 
     this.httpClient
-      .post<{ message: string; postId: string }>(this.apiUrl, postData)
-      .subscribe(({ postId }) => {
-        post.id = postId;
+      .post<{ message: string; post: Post }>(this.apiUrl, postData)
+      .subscribe(({ post }) => {
         this.posts = [...this.posts, post];
         this.postsSubject.next([...this.posts]);
         this.route.navigate(['']);
