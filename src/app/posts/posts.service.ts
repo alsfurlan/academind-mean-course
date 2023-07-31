@@ -30,8 +30,13 @@ export class PostsService {
   }
 
   addPost(post: Post) {
+    const postData = new FormData();
+    postData.set('title', post.title);
+    postData.set('content', post.content);
+    postData.set('image', post.image, post.title);
+
     this.httpClient
-      .post<{ message: string; postId: string }>(this.apiUrl, post)
+      .post<{ message: string; postId: string }>(this.apiUrl, postData)
       .subscribe(({ postId }) => {
         post.id = postId;
         this.posts = [...this.posts, post];
