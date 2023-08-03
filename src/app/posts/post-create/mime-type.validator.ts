@@ -34,7 +34,7 @@ export class PostValidators {
           observer.complete();
         });
 
-        if (file) {
+        if (file && typeof(file) === 'object') {
           fileReader.readAsArrayBuffer(file);
         }
       }

@@ -30,9 +30,7 @@ router.post("", multer({ storage }).single("image"), (req, res, next) => {
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
+    imagePath: getImagePath(req),
   });
   post.save().then((post) => {
     res.status(201).json({
@@ -41,7 +39,7 @@ router.post("", multer({ storage }).single("image"), (req, res, next) => {
         id: post._id,
         title: post.title,
         content: post.content,
-        imagePath: post.imagePath
+        imagePath: post.imagePath,
       },
     });
   });
@@ -72,15 +70,27 @@ router.delete("/:id", (req, res, next) => {
   });
 });
 
-router.put("/:id", (req, res, next) => {
+router.put("/:id", multer({ storage }).single("image"), (req, res, next) => {
+  const { title, content, id, image } = req.body;
+  const imagePath = req.file ? getImagePath(req) : image;
   const post = new Post({
-    _id: req.body.id,
-    title: req.body.title,
-    content: req.body.content,
+    _id: id,
+    title,
+    content,
+    imagePath,
   });
   Post.updateOne({ _id: req.params.id }, post).then(() => {
-    res.status(200).json({ message: "Update successful!" });
+    res
+      .status(200)
+      .json({
+        message: "Update successful!",
+        post: { id, title, content, image: imagePath },
+      });
   });
 });
 
 module.exports = router;
+
+function getImagePath(req) {
+  return `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+}

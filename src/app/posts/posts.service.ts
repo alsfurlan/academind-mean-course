@@ -29,11 +29,13 @@ export class PostsService {
       });
   }
 
-  addPost(post: Post, image: File) {
-    const postData = new FormData();
+  addPost(post: Post) {
+    let postData = new FormData();
     postData.set('title', post.title);
     postData.set('content', post.content);
-    postData.set('image', image, post.title);
+    if (typeof post.image === 'object') {
+      postData.set('image', post.image, post.title);
+    }
 
     this.httpClient
       .post<{ message: string; post: Post }>(this.apiUrl, postData)
@@ -44,10 +46,29 @@ export class PostsService {
       });
   }
 
-  updatePost(post: Post) {
+  updatePost(updatedPost: Post) {
+    let postData: FormData | Post;
+    if (typeof updatedPost.image === 'string') {
+      postData = {
+        id: updatedPost.id,
+        title: updatedPost.title,
+        content: updatedPost.content,
+        imagePath: updatedPost.image,
+      };
+    } else {
+      postData = new FormData();
+      postData.set('id', updatedPost.id);
+      postData.set('title', updatedPost.title);
+      postData.set('content', updatedPost.content);
+      postData.set('image', updatedPost.image, updatedPost.title);
+    }
+
     return this.httpClient
-      .put<{ message: string }>(this.apiUrl + post.id, post)
-      .subscribe(() => {
+      .put<{ message: string; post: Post }>(
+        this.apiUrl + updatedPost.id,
+        postData
+      )
+      .subscribe(({ post }) => {
         const updatedPosts = [...this.posts];
         const index = this.posts.findIndex((p) => p.id === post.id);
         updatedPosts[index] = post;

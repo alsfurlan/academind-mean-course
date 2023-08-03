@@ -31,7 +31,10 @@ export class PostCreateComponent implements OnInit {
       content: new FormControl(null, {
         validators: [Validators.required],
       }),
-      image: new FormControl(null, { validators: [Validators.required], asyncValidators: [PostValidators.mimeType] }),
+      image: new FormControl(null, {
+        validators: [Validators.required],
+        asyncValidators: [PostValidators.mimeType],
+      }),
     });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -46,6 +49,7 @@ export class PostCreateComponent implements OnInit {
           this.form.setValue({
             title: post.title,
             content: post.content,
+            image: post.imagePath,
           });
         });
       } else {
@@ -58,12 +62,14 @@ export class PostCreateComponent implements OnInit {
 
   onSave() {
     const { title, content, image } = this.form.value;
-    const post: Post = { title, content };
+    const post: Post = { title, content, image };
+
     this.isLoading = true;
+
     if (this.mode === 'create') {
-      this.postsService.addPost(post, image);
+      this.postsService.addPost(post);
     } else {
-      this.postsService.updatePost({ id: this.postId, ...post });
+      this.postsService.updatePost({ id: this.postId, image, ...post });
     }
     this.form.reset();
   }
