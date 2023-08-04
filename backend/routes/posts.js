@@ -56,7 +56,14 @@ router.get("/:id", (req, res, next) => {
 });
 
 router.get("", (req, res, next) => {
-  Post.find().then((posts) => {
+  const pageSize = +req.query.pagesize;
+  const page = +req.query.page;
+  console.log(pageSize, " ", page);
+  const postQuery = Post.find();
+  if (page && pageSize) {
+    postQuery.skip(pageSize * (page - 1)).limit(pageSize);
+  }
+  postQuery.then((posts) => {
     res.status(200).json({
       message: "Posts fetched successfully",
       posts,
@@ -80,12 +87,10 @@ router.put("/:id", multer({ storage }).single("image"), (req, res, next) => {
     imagePath,
   });
   Post.updateOne({ _id: req.params.id }, post).then(() => {
-    res
-      .status(200)
-      .json({
-        message: "Update successful!",
-        post: { id, title, content, image: imagePath },
-      });
+    res.status(200).json({
+      message: "Update successful!",
+      post: { id, title, content, image: imagePath },
+    });
   });
 });
 
