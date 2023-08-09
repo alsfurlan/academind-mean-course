@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Post, PostResponse } from './post.model';
 import { Observable, Subject, map, of } from 'rxjs';
 import { Router } from '@angular/router';
@@ -15,9 +15,12 @@ export class PostsService {
 
   constructor(private httpClient: HttpClient, private route: Router) {}
 
-  getPosts() {
+  getPosts(currentPage: number, postsPerPage: number) {
+    let params = new HttpParams();
+    params = params.append('page', currentPage);
+    params = params.append('pagesize', postsPerPage);
     this.httpClient
-      .get<{ message: string; posts: PostResponse[] }>(this.apiUrl)
+      .get<{ message: string; posts: PostResponse[] }>(this.apiUrl, { params })
       .pipe(
         map(({ posts }) =>
           posts.map(({ _id, ...post }) => ({ id: _id, ...post }))

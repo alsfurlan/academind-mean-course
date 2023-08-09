@@ -13,13 +13,14 @@ export class PostListComponent implements OnInit {
   posts$: Observable<Post[]> = this.postsService.posts$;
   isLoading = true;
   totalPosts = 10;
+  currentPage = 1;
   pageSize = 2;
   pageSizeOptions = [2, 5, 10, 25, 50];
 
   constructor(public postsService: PostsService) {}
 
   ngOnInit(): void {
-    this.postsService.getPosts();
+    this.loadPosts();
     this.isLoading = false;
     this.postsService.posts$.subscribe(() => {
       this.isLoading = false;
@@ -31,6 +32,12 @@ export class PostListComponent implements OnInit {
   }
 
   onChangePage(pageData: PageEvent) {
-    console.log(pageData);
+    this.currentPage = pageData.pageIndex + 1;
+    this.pageSize = pageData.pageSize;
+    this.loadPosts();
+  }
+
+  private loadPosts() {
+    this.postsService.getPosts(this.currentPage, this.pageSize);
   }
 }
