@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class PostsService {
   private posts: Post[] = [];
-  private postsSubject = new Subject<Post[]>();
+  private postsSubject = new Subject<{ posts: Post[]; postCount: number }>();
   posts$ = this.postsSubject.asObservable();
   private apiUrl = 'http://localhost:3000/api/posts/';
 
@@ -20,15 +20,19 @@ export class PostsService {
     params = params.append('page', currentPage);
     params = params.append('pagesize', postsPerPage);
     this.httpClient
-      .get<{ message: string; posts: PostResponse[] }>(this.apiUrl, { params })
-      .pipe(
-        map(({ posts }) =>
-          posts.map(({ _id, ...post }) => ({ id: _id, ...post }))
-        )
+      .get<{ message: string; posts: PostResponse[]; maxPosts: number }>(
+        this.apiUrl,
+        { params }
       )
-      .subscribe((posts) => {
+      .pipe(
+        map(({ posts, maxPosts }) => ({
+          maxPosts,
+          posts: posts.map(({ _id, ...post }) => ({ id: _id, ...post })),
+        }))
+      )
+      .subscribe(({ posts, maxPosts: postCount }) => {
         this.posts = posts;
-        this.postsSubject.next([...posts]);
+        this.postsSubject.next({ posts: [...posts], postCount });
       });
   }
 
@@ -43,9 +47,7 @@ export class PostsService {
     this.httpClient
       .post<{ message: string; post: Post }>(this.apiUrl, postData)
       .subscribe(({ post }) => {
-        this.posts = [...this.posts, post];
-        this.postsSubject.next([...this.posts]);
-        this.route.navigate(['']);
+        this.route.navigate(['/']);
       });
   }
 
@@ -72,12 +74,7 @@ export class PostsService {
         postData
       )
       .subscribe(({ post }) => {
-        const updatedPosts = [...this.posts];
-        const index = this.posts.findIndex((p) => p.id === post.id);
-        updatedPosts[index] = post;
-        this.posts = updatedPosts;
-        this.postsSubject.next([...this.posts]);
-        this.route.navigate(['']);
+        this.route.navigate(['/']);
       });
   }
 
@@ -94,10 +91,6 @@ export class PostsService {
   }
 
   deletePost(postId: string) {
-    this.httpClient.delete(this.apiUrl + postId).subscribe(() => {
-      const updatedPosts = this.posts.filter((post) => post.id !== postId);
-      this.posts = updatedPosts;
-      this.postsSubject.next(this.posts);
-    });
+    return this.httpClient.delete(this.apiUrl + postId);
   }
 }

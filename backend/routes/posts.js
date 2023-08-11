@@ -56,19 +56,27 @@ router.get("/:id", (req, res, next) => {
 });
 
 router.get("", (req, res, next) => {
-  const pageSize = +req.query.pagesize;
-  const page = +req.query.page;
-  console.log(pageSize, " ", page);
-  const postQuery = Post.find();
-  if (page && pageSize) {
-    postQuery.skip(pageSize * (page - 1)).limit(pageSize);
-  }
-  postQuery.then((posts) => {
-    res.status(200).json({
-      message: "Posts fetched successfully",
-      posts,
+  const pageSize = +req.query.pagesize || 10;
+  const currentPage = +req.query.page || 0;
+  console.log("currentPage: ", currentPage);
+  console.log("pageSize: ", pageSize);
+  console.log("skip:", pageSize * currentPage);
+
+  let fetchedPosts;
+  Post.find({})
+    .skip(pageSize * currentPage)
+    .limit(pageSize)
+    .then((posts) => {
+      fetchedPosts = posts;
+      return Post.count();
+    })
+    .then((count) => {
+      res.status(200).json({
+        message: "Posts fetched successfully",
+        posts: fetchedPosts,
+        maxPosts: count,
+      });
     });
-  });
 });
 
 router.delete("/:id", (req, res, next) => {
