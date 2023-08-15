@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 
 const postsRoute = require("./routes/posts");
+const userRoute = require('./routes/user');
 const app = express();
 
 mongoose
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/posts", postsRoute);
+app.use('/api/user', userRoute);
 app.use("/images", express.static(path.join('backend/images')));
 
 
