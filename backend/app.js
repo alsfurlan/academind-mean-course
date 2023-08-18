@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
+const cors = require('cors');
 
 const postsRoute = require("./routes/posts");
 const userRoute = require('./routes/user');
@@ -22,18 +23,7 @@ mongoose
 
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-  );
-  next();
-});
+app.use(cors());
 
 app.use("/api/posts", postsRoute);
 app.use('/api/user', userRoute);

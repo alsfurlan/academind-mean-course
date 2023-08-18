@@ -9,17 +9,17 @@ router.post("/signup", async (req, res, next) => {
     email: req.body.email,
     password,
   });
-  try {
-    const result = await user.save();
-    res.status(201).json({
-      message: "User created!",
-      result,
-    });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+  user.save().then(
+    (result) => {
+      res.status(201).json({
+        message: "User created!",
+        result: result
+      });
+    },
+    (error) => {
+      res.status(500).json({ error });
+    }
+  );
 });
-
-router.post("/login", (req, res, next) => {});
 
 module.exports = router;
