@@ -14,4 +14,12 @@ export class AuthService {
         console.log(response);
       });
   }
+
+  login(auth: AuthInterface) {
+    this.httpClient
+      .post(`${environment.apiUrl}/user/login`, auth)
+      .subscribe((response) => {
+        console.log(response);
+      });
+  }
 }
