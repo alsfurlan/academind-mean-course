@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const secret = require('../secret');
 
 router.post("/signup", async (req, res, next) => {
   const password = await bcrypt.hash(req.body.password, 10);
@@ -45,7 +46,7 @@ router.post("/login", async (req, res, next) => {
           email: userFound.email,
           id: userFound._id,
         },
-        "secret",
+        secret,
         { expiresIn: "1h" }
       );
       console.log("token");
