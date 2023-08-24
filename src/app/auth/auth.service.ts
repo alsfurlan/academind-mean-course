@@ -26,9 +26,9 @@ export class AuthService {
   login(auth: AuthInterface) {
     this.httpClient
       .post<{ token: string }>(`${environment.apiUrl}/user/login`, auth)
-      .subscribe((response) => {
-        this.token = response.token;
-        this.authStateListener.next(true);
+      .subscribe(({ token }) => {
+        this.token = token;
+        if (token) this.authStateListener.next(true);
       });
   }
 
@@ -40,5 +40,4 @@ export class AuthService {
     this.token = undefined;
     this.authStateListener.next(false);
   }
-
 }
