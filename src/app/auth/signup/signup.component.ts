@@ -13,6 +13,7 @@ export class SignupComponent {
 
   onSubmit(form: NgForm) {
     const { email, password } = form.value;
+    this.isLoading = true;
     this.auth.createUser({ email, password });
   }
 }

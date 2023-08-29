@@ -13,6 +13,7 @@ export class LoginComponent {
 
   onSubmit(form: NgForm) {
     const { email, password } = form.value;
+    this.isLoading = true;
     this.authService.login({
       email,
       password,

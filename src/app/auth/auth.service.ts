@@ -3,13 +3,14 @@ import { AuthInterface } from './auth.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private token: string;
   private authStateListener = new BehaviorSubject<boolean>(false);
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private router: Router) {}
 
   getAuthStateListener() {
     return this.authStateListener.asObservable();
@@ -28,7 +29,10 @@ export class AuthService {
       .post<{ token: string }>(`${environment.apiUrl}/user/login`, auth)
       .subscribe(({ token }) => {
         this.token = token;
-        if (token) this.authStateListener.next(true);
+        if (token) {
+          this.authStateListener.next(true);
+          this.router.navigate(['']);
+        }
       });
   }
 
@@ -39,5 +43,6 @@ export class AuthService {
   logout() {
     this.token = undefined;
     this.authStateListener.next(false);
+    this.router.navigate(['']);
   }
 }
