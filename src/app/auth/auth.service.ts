@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 export class AuthService {
   private token: string;
   private authStateListener = new BehaviorSubject<boolean>(false);
+  private timer: any;
 
   constructor(private httpClient: HttpClient, private router: Router) {}
 
@@ -26,11 +27,12 @@ export class AuthService {
 
   login(auth: AuthInterface) {
     this.httpClient
-      .post<{ token: string }>(`${environment.apiUrl}/user/login`, auth)
-      .subscribe(({ token }) => {
+      .post<{ token: string, expiresIn: number }>(`${environment.apiUrl}/user/login`, auth)
+      .subscribe(({ token, expiresIn }) => {
         this.token = token;
         if (token) {
           this.authStateListener.next(true);
+          this.timer = setTimeout(() => this.logout(), expiresIn);
           this.router.navigate(['']);
         }
       });
@@ -44,5 +46,6 @@ export class AuthService {
     this.token = undefined;
     this.authStateListener.next(false);
     this.router.navigate(['']);
+    clearTimeout(this.timer);
   }
 }

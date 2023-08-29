@@ -49,8 +49,10 @@ router.post("/login", async (req, res, next) => {
         secret,
         { expiresIn: "1h" }
       );
-      console.log("token");
-      res.status(200).json({ token });
+      res.status(200).json({
+        token,
+        expiresIn: 3600
+      });
     })
     .catch(() => {
       res.status(401).json({
