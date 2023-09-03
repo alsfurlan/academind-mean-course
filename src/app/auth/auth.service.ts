@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+;import { Injectable } from '@angular/core';
 import { AuthInterface } from './auth.model';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -21,6 +21,7 @@ export class AuthService {
       .post(`${environment.apiUrl}/user/signup`, auth)
       .subscribe((response) => {
         console.log(response);
+        this.router.navigate(['']);
       });
   }
 
