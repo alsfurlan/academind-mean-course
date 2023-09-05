@@ -19,6 +19,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   pageSizeOptions = [2, 5, 10, 25, 50];
   subscriptions = new Subscription();
   isAuthenticated: boolean;
+  userId: string;
 
   constructor(
     public postsService: PostsService,
@@ -38,6 +39,7 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.authService.getAuthStateListener().subscribe((isAuthenticated) => {
         this.isAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
       })
     );
   }
