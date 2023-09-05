@@ -59,6 +59,7 @@ export class PostsService {
         title: updatedPost.title,
         content: updatedPost.content,
         imagePath: updatedPost.image,
+        creator: updatedPost.creator,
       };
     } else {
       postData = new FormData();
