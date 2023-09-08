@@ -20,9 +20,10 @@ export class AuthService {
   createUser(auth: AuthInterface) {
     this.httpClient
       .post(`${environment.apiUrl}/user/signup`, auth)
-      .subscribe((response) => {
-        console.log(response);
+      .subscribe(() => {
         this.router.navigate(['']);
+      }, () => {
+        this.authStateListener.next(false);
       });
   }
 
@@ -48,6 +49,8 @@ export class AuthService {
           this.saveAuthData(token, expirationDate, userId);
           this.router.navigate(['']);
         }
+      }, () => {
+        this.authStateListener.next(false);
       });
   }
 
