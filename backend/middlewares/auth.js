@@ -9,7 +9,7 @@ const checkAuth = (req, res, next) => {
     req.user = { email, id };
     next();
   } catch {
-    res.status(401).end();
+    res.status(401).json({message: 'You\'re not authenticated!'});
   }
 };
 

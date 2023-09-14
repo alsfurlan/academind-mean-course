@@ -1,11 +1,11 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
+const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
-const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 const secret = require('../secret');
 
-router.post("/signup", async (req, res, next) => {
+router.post('/signup', async (req, res, next) => {
   const password = await bcrypt.hash(req.body.password, 10);
   const user = new User({
     email: req.body.email,
@@ -14,17 +14,19 @@ router.post("/signup", async (req, res, next) => {
   user.save().then(
     (result) => {
       res.status(201).json({
-        message: "User created!",
+        message: 'User created!',
         result: result,
       });
     },
     (error) => {
-      res.status(500).json(error);
+      res.status(500).json({
+        message: 'Invalid authentication credentials!',
+      });
     }
   );
 });
 
-router.post("/login", async (req, res, next) => {
+router.post('/login', async (req, res, next) => {
   let userFound;
   User.findOne({ email: req.body.email })
     .then((user) => {
@@ -37,7 +39,7 @@ router.post("/login", async (req, res, next) => {
     .then((result) => {
       if (!result) {
         res.status(401).json({
-          message: "Auth failed!",
+          message: 'Invalid authentication credentials!',
         });
         return;
       }
@@ -47,17 +49,17 @@ router.post("/login", async (req, res, next) => {
           id: userFound._id,
         },
         secret,
-        { expiresIn: "1h" }
+        { expiresIn: '1h' }
       );
       res.status(200).json({
         token,
         userId: userFound._id,
-        expiresIn: 3600
+        expiresIn: 3600,
       });
     })
     .catch(() => {
       res.status(401).json({
-        message: "Auth failed!",
+        message: 'Invalid authentication credentials!',
       });
     });
 });

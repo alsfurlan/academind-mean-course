@@ -39,18 +39,25 @@ router.post(
       imagePath: getImagePath(req),
       creator: req.user.id,
     });
-    post.save().then((post) => {
-      res.status(201).json({
-        message: 'Post added successfully!',
-        post: {
-          id: post._id,
-          title: post.title,
-          content: post.content,
-          imagePath: post.imagePath,
-          creator: post.creator,
-        },
+    post
+      .save()
+      .then((post) => {
+        res.status(201).json({
+          message: 'Post added successfully!',
+          post: {
+            id: post._id,
+            title: post.title,
+            content: post.content,
+            imagePath: post.imagePath,
+            creator: post.creator,
+          },
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({
+          message: 'Creating a post failed!',
+        });
       });
-    });
   }
 );
 
@@ -61,7 +68,12 @@ router.get('/:id', (req, res, next) => {
     } else {
       res.status(404).json({ message: 'Post not found!' });
     }
-  });
+  })
+  .catch((error) => {
+    res.status(500).json({
+      message: 'Fetching post failed!'
+    })
+  });;
 });
 
 router.get('', (req, res, next) => {
@@ -85,6 +97,11 @@ router.get('', (req, res, next) => {
         posts: fetchedPosts,
         maxPosts: count,
       });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: 'Fetching posts failed!'
+      })
     });
 });
 
@@ -98,7 +115,12 @@ router.delete('/:id', checkAuth, (req, res, next) => {
         res.status(401).json({ messagee: 'Not authorized!' });
       }
     }
-  );
+  )
+  .catch(() => {
+    res.status(500).json({
+      message: 'Error deleting the post!'
+    })
+  });;
 });
 
 router.put(
@@ -115,8 +137,8 @@ router.put(
       imagePath,
       creator: req.user.id,
     });
-    Post.updateOne({ _id: req.params.id, creator: req.user.id }, post).then(
-      ({ modifiedCount }) => {
+    Post.updateOne({ _id: req.params.id, creator: req.user.id }, post)
+      .then(({ modifiedCount }) => {
         if (modifiedCount) {
           res.status(200).json({
             message: 'Update successful!',
@@ -125,8 +147,12 @@ router.put(
         } else {
           res.status(401).json({ messagee: 'Not authorized!' });
         }
-      }
-    );
+      })
+      .catch((error) => {
+        res.status(500).json({
+          message: "Couldn't update the post!",
+        });
+      });
   }
 );
 
