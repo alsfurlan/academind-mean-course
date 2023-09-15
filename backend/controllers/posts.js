@@ -117,3 +117,7 @@ exports.updatePost = (req, res, next) => {
       });
     });
 };
+
+function getImagePath(req) {
+  return `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+}
