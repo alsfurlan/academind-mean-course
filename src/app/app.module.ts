@@ -16,13 +16,12 @@ import { AuthInterceptor } from './auth/auth.interceptor';
 import { ErrorInterceptor } from './error/error.interceptor';
 import { ErrorComponent } from './error/error.component';
 import { AngularMaterialModule } from './angular-material.module';
+import { PostModule } from './posts/post.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    PostCreateComponent,
-    PostListComponent,
     LoginComponent,
     SignupComponent,
     ErrorComponent,
@@ -30,11 +29,11 @@ import { AngularMaterialModule } from './angular-material.module';
   imports: [
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    AngularMaterialModule
+    AngularMaterialModule,
+    PostModule,
   ],
   providers: [
     {
