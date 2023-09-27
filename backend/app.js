@@ -10,7 +10,7 @@ const app = express();
 
 mongoose
   .connect(
-    "mongodb+srv://max:Yfm4s5VawVNUzywk@academind.k0cse0j.mongodb.net/?retryWrites=true&w=majority"
+    `mongodb+srv://max:${process.env.MONGO_PASSWORD}@academind.k0cse0j.mongodb.net/?retryWrites=true&w=majority`
   )
   .then(
     () => {

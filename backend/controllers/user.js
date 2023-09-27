@@ -2,7 +2,6 @@
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
 const bcrypt = require('bcrypt');
-const secret = require('../secret');
 
 exports.createUser = async (req, res, next) => {
   const password = await bcrypt.hash(req.body.password, 10);
@@ -47,7 +46,7 @@ exports.login = (req, res, next) => {
           email: userFound.email,
           id: userFound._id,
         },
-        secret,
+        process.env.JWT_KEY,
         { expiresIn: '1h' }
       );
       res.status(200).json({
