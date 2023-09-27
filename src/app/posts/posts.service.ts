@@ -4,6 +4,8 @@ import { Post, PostResponse } from './post.model';
 import { Observable, Subject, map, of } from 'rxjs';
 import { Router } from '@angular/router';
 
+const BACKEND_URL = 'http://localhost:3000/api/posts/';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -11,7 +13,6 @@ export class PostsService {
   private posts: Post[] = [];
   private postsSubject = new Subject<{ posts: Post[]; postCount: number }>();
   posts$ = this.postsSubject.asObservable();
-  private apiUrl = 'http://localhost:3000/api/posts/';
 
   constructor(private httpClient: HttpClient, private route: Router) {}
 
@@ -21,7 +22,7 @@ export class PostsService {
     params = params.append('pagesize', postsPerPage);
     this.httpClient
       .get<{ message: string; posts: PostResponse[]; maxPosts: number }>(
-        this.apiUrl,
+        BACKEND_URL,
         { params }
       )
       .pipe(
@@ -45,7 +46,7 @@ export class PostsService {
     }
 
     this.httpClient
-      .post<{ message: string; post: Post }>(this.apiUrl, postData)
+      .post<{ message: string; post: Post }>(BACKEND_URL, postData)
       .subscribe(({ post }) => {
         this.route.navigate(['/']);
       });
@@ -71,7 +72,7 @@ export class PostsService {
 
     return this.httpClient
       .put<{ message: string; post: Post }>(
-        this.apiUrl + updatedPost.id,
+        BACKEND_URL + updatedPost.id,
         postData
       )
       .subscribe(({ post }) => {
@@ -83,7 +84,7 @@ export class PostsService {
     const post = this.posts.find((post) => post.id === postId);
     return post
       ? of({ ...post })
-      : this.httpClient.get<{ post: PostResponse }>(this.apiUrl + postId).pipe(
+      : this.httpClient.get<{ post: PostResponse }>(BACKEND_URL + postId).pipe(
           map(({ post }) => {
             const { _id: id, ...props } = post;
             return { id, ...props };
@@ -92,6 +93,6 @@ export class PostsService {
   }
 
   deletePost(postId: string) {
-    return this.httpClient.delete(this.apiUrl + postId);
+    return this.httpClient.delete(BACKEND_URL + postId);
   }
 }
